@@ -165,6 +165,33 @@ jobs:
           echo "build_tag=OpenWrt_armv8_${{ inputs.openwrt_storage }}_$(date +"%Y.%m")" >> ${GITHUB_ENV}
           echo "status=success" >> ${GITHUB_OUTPUT}
 
+      - name: Slim down rootfs (Remove Docker/iStore/WiFi)
+        if: ${{ steps.download.outputs.status == 'success' && !cancelled() }}
+        run: |
+          mkdir -p /builder/tmp_rootfs
+          # 自动获取下载好的 rootfs 文件名并解压
+          ROOTFS_TAR=$(ls /builder/download/*rootfs.tar.gz)
+          sudo tar -zxf $ROOTFS_TAR -C /builder/tmp_rootfs
+          
+          echo "Starting slimming process..."
+          # 1. 移除 WiFi 驱动及固件
+          sudo rm -rf /builder/tmp_rootfs/lib/modules/*/kernel/drivers/net/wireless/broadcom/brcm80211/brcmfmac/ 2>/dev/null
+          sudo rm -rf /builder/tmp_rootfs/lib/firmware/brcm/ 2>/dev/null
+          
+          # 2. 移除 Docker (解决高负载)
+          sudo rm -rf /builder/tmp_rootfs/etc/docker/ /builder/tmp_rootfs/usr/lib/docker/ 2>/dev/null
+          sudo rm -f /builder/tmp_rootfs/usr/bin/docker* /builder/tmp_rootfs/etc/init.d/docker 2>/dev/null
+          sudo rm -f /builder/tmp_rootfs/usr/lib/lua/luci/controller/docker.lua 2>/dev/null
+          
+          # 3. 移除 iStore
+          sudo rm -rf /builder/tmp_rootfs/usr/lib/lua/luci/controller/istore.lua /builder/tmp_rootfs/www/istore/ 2>/dev/null
+          
+          # 4. 重新打包覆盖原文件
+          cd /builder/tmp_rootfs
+          sudo tar -zcf $ROOTFS_TAR .
+          sudo rm -rf /builder/tmp_rootfs
+          echo "Slimming completed."
+          
       - name: Package OpenWrt Firmware
         uses: unifreq/openwrt_packit@master
         if: ${{ steps.download.outputs.status == 'success' && !cancelled() }}
