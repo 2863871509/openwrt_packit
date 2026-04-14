@@ -13,50 +13,11 @@ on:
       openwrt_soc:
         description: "Select the target device board."
         required: false
-        default: "all"
+        default: "s905d"
         type: choice
         options:
           - all
-          - s922x_s905x3_s905x2_s912_s905d_s905
-          - rock5b_h28k_r66s_vplus
-          - 100ask-dshanpi-a1
-          - ak88
-          - beikeyun
-          - cm3
-          - e20c
-          - e24c
-          - e25
-          - e52c
-          - e54c
-          - ht2
-          - h28k
-          - h66k
-          - h68k
-          - h69k
-          - h69k-max
-          - h88k
-          - h88k-v3
-          - jp-tvbox
-          - l1pro
-          - photonicat
-          - qemu
-          - r66s
-          - r68s
-          - rock5b
-          - rock5c
-          - rk3399
-          - s905
           - s905d
-          - s905x2
-          - s905x3
-          - s912
-          - s922x
-          - s922x-n2
-          - vplus
-          - watermelon-pi
-          - yixun-rs6pro
-          - zcube1-max
-          - diy
       customize_rk3399:
         description: "Set custom RK3399 device list."
         required: false
@@ -68,7 +29,7 @@ on:
       openwrt_ip:
         description: "Set the default IP address."
         required: false
-        default: "192.168.1.1"
+        default: "192.168.1.2"
       kernel_repo:
         description: "Set the kernel download repository."
         required: false
@@ -80,20 +41,11 @@ on:
       openwrt_kernel:
         description: "Select the kernel version to use."
         required: false
-        default: "6.12.y_6.18.y"
+        default: "6.6.y"
         type: choice
         options:
-          - 5.10.y
-          - 5.15.y
-          - 6.1.y
           - 6.6.y
-          - 6.12.y
-          - 6.18.y
-          - 5.10.y_5.15.y
-          - 6.1.y_6.6.y
-          - 6.12.y_6.18.y
-          - 6.1.y_6.12.y
-          - 6.1.y_6.18.y
+          - 6.1.y
       auto_kernel:
         description: "Auto use the latest kernel."
         required: false
@@ -104,7 +56,7 @@ on:
         required: false
         default: "OpenWrt_armv8_rootfs"
       script_diy_path:
-        description: "Set the path for custom DIY scripts."
+        description: "diy/n1-lite.sh"
         required: false
         default: ""
       openwrt_storage:
@@ -250,7 +202,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             ### OpenWrt Image information
-            - Default IP: 192.168.1.1
+            - Default IP: 192.168.1.2
             - Default username: root
             - Default password: password
             ### Install to EMMC
